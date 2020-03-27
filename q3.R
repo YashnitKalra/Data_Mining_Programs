@@ -1,6 +1,7 @@
 wine_df=read.csv("https://gist.githubusercontent.com/tijptjik/9408623/raw/b237fa5848349a14a14e5d4107dc7897c21951f5/wine.csv")
 head(wine_df)
 
+# install.packages("caret",dependencies = TRUE)
 library(caret)
 
 # wine
