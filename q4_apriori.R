@@ -1,4 +1,6 @@
 library(arules)
+library(arulesViz)
+
 df=read.csv("apriori/1000i.csv",header=FALSE)
 colnames(df)=c("Receipt_Number","Food","Quantity")
 head(df)

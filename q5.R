@@ -89,8 +89,8 @@ createModel=function(df,split_ratio,sampling_method,model_type){
     }
     
   }
-  # rpart.plot(myModel)
-  # rpart.plot(myModel,type=4,extra=101)
+  #rpart.plot(myModel)
+  #rpart.plot(myModel,type=4,extra=101)
   p=confusionMatrix(predictions,testing_set$Class)
   p$overall[1] # Accuracy
 }
