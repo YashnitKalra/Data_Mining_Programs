@@ -3,7 +3,7 @@ colnames(df)=c("ID", "Clump_Thickness", "Uniformity_of_Cell_Size", "Uniformity_o
 
 df=replace(df,df=="?",NA) # replace "?" in any cell with NA
 df=df[complete.cases(df),] # remove rows having NA in any column
-df$Bare_Nuclei=as.integer(df$Bare_Nuclei)
+df$Bare_Nuclei=as.integer(df$Bare_Nuclei) # since there were some '?' in this column so it was read as string
 df$Class=as.factor(df$Class)
 head(df)
 
@@ -25,7 +25,7 @@ createModel=function(df,split_ratio,sampling_method,model_type){
   if(sampling_method=="random"){
     accuracies=c()
     for(i in seq(1,10)){
-      acc=createModel(df,split_ratio,"holdout",model_type)
+      acc=createModel(df,split_ratio,"holdout",model_type)  # recursively calling
       accuracies=c(accuracies,acc)
     }
     return(mean(accuracies))
@@ -42,21 +42,22 @@ createModel=function(df,split_ratio,sampling_method,model_type){
       
       # decision tree
       if(model_type == "decisionTree"){
-        myModel=rpart(Class~.,training_set,method = "class")
+        myModel=rpart(Class~.,training_set,method = "class")  # column Class if 'y' and rest of the columns are used as 'xi'
         predictions=predict(myModel,testing_set,type="class")
       }
       
       # knn
       else if(model_type=="knn"){
-        temp=as.data.frame(lapply(training_set[1:10], fnormalize))
+        temp=as.data.frame(lapply(training_set[1:10], fnormalize))  # normalizing first 10 columns of training dataset
         temp$Class=training_set$Class
         training_set=temp
         
-        temp=as.data.frame(lapply(testing_set[1:10], fnormalize))
+        temp=as.data.frame(lapply(testing_set[1:10], fnormalize)) # normalizing first 10 columns of testing dataset
         temp$Class=testing_set$Class
         testing_set=temp
         
         predictions=knn(training_set,testing_set,cl=training_set$Class,k=13)
+        # cl is the classification of training dataset and k the number of neighbours to be consisdered
       }
       
       # naive bayes
@@ -73,6 +74,8 @@ createModel=function(df,split_ratio,sampling_method,model_type){
       # Decision Tree
       if(model_type=="decisionTree"){
         myModel=train(Class~., data = training_set, method='rpart', trControl = trainControl(method = 'cv', number = 10))
+        # in trainControl, method is the resampling method used, cv => cross validation
+        # number is the number of folds/iterations based on the type of method
       }
       
       # knn
@@ -89,7 +92,7 @@ createModel=function(df,split_ratio,sampling_method,model_type){
     }
     
   }
-  #rpart.plot(myModel)
+  #rpart.plot(myModel) # plotting of decision tree
   #rpart.plot(myModel,type=4,extra=101)
   p=confusionMatrix(predictions,testing_set$Class)
   p$overall[1] # Accuracy
